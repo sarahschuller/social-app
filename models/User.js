@@ -55,18 +55,20 @@ User.prototype.validate = function () {
   }
 };
 
-User.prototype.login = async function (callback) {
-  this.cleanUp();
-  // #1: Validate user data
-  const loginAttempt = await usersCollection.findOne({
-    username: this.data.username,
+User.prototype.login = function () {
+  return new Promise(async (resolve, reject) => {
+    this.cleanUp();
+    // #1: Validate user data
+    const loginAttempt = await usersCollection.findOne({
+      username: this.data.username,
+    });
+    // #2: Only if there are no validation errors
+    if (loginAttempt && loginAttempt.password == this.data.password) {
+      resolve("Congrats!");
+    } else {
+      reject("Invalid username / password.");
+    }
   });
-  // #2: Only if there are no validation errors
-  if (loginAttempt && loginAttempt.password == this.data.password) {
-    callback("Congrats!");
-  } else {
-    callback("Invalid username / password.");
-  }
 };
 
 User.prototype.register = function () {
